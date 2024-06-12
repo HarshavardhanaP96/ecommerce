@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id            Int           @unique @default(autoincrement()) @id
+  UUID          String        @unique @default(uuid())
+  First_Name    String
+  Last_Name     String
+  email         String        @unique
+  passwordHash  String            
+  phone         Int?
+  Created_At    DateTime      @default(now())
+  Last_updated  DateTime      @default(now())
+  isDeleted     Boolean       @default(false)
+  Deleted       DateTime?     @default(now())
+  Vendor        Boolean       @default(false)
+  admin         Boolean       @default(false)
+  products      Product[]                                   //1.one to many>>
+  orders        Orders[]                                    //2.one to many>>
+  addresses     Address[]                                   //3.one to many>>
+  payments      Payment[]                                   //4.one to many>>
+
+}
+
+
+model Product{
+  id            Int           @unique @default(autoincrement()) @id
+  UUID          String        @unique @default(uuid())
+  name          String
+  category      String[]
+  description   String
+  reviews       String[]
+  rating        Int?
+  rating_count  Int?
+  images        Image[]                                                              //7.one to many>>
+  vendor        User          @relation(fields: [vendorId], references: [id])        //1.one to many>>
+  vendorId      Int           
+  inventories   Inventory[]                                                          // 5.one to many>>
+  orders        Orders[]                                                             // 6.one to many>>
+}
+
+
+model Image{
+  id            Int           @id @default(autoincrement())
+  url           String
+  uploadedAt    DateTime
+  product       Product       @relation(fields: [productId],references: [id])         //7.one to many
+  productId     Int
+}
+
+
+model Orders{
+  UUID          String        @id @unique @default(uuid())
+  Product       Product       @relation(fields: [Product_Id], references: [id])       //6.one to many>>
+  Product_Id    Int           
+  Buyer         User          @relation(fields: [BuyerId], references: [id])          //2.one to many>>
+  BuyerId       Int           
+}
+
+
+model Address{
+  id            Int           @id @default(autoincrement())
+  landmark      String
+  isPrimary     Boolean
+  locality      String
+  reagion       String
+  state         String
+  pincode       Int
+  user          User          @relation(fields: [userId],references: [id])        //3.one to many
+  userId        Int
+}
+
+
+model Payment{
+  id            String        @id @unique @default(uuid())
+  txnId         String        @unique       
+  status        String
+  amount        Float         //positive or negative based or db or cr
+  user          User          @relation(fields: [userId],references: [id])          //4.one to many>>
+  userId        Int
+  paymentMode   String
+  timeStamp     DateTime
+}
+
+
+model Inventory{
+  id            Int            @id @unique @default(autoincrement())
+  location      String
+  Product       Product        @relation(fields: [Product_Id], references: [id])        //5.one to many
+  Product_Id    Int            @unique
+  Qty_Avail     Int 
+}
