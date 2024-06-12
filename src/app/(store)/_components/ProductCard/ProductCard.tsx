@@ -30,7 +30,7 @@ const ProductCard= ()=> {
   return (
   
       <>
-        <div className="min-h-80 w-60 bg-slate-900 border-1 border-slate-600 rounded-md p-2 drop-shadow-lg text-slate-200 mt-10 ml-10">
+        <div className="min-h-80 w-60 bg-slate-900 border-1 border-slate-600 rounded-md p-2 drop-shadow-lg text-slate-200 mt-5">
             
           <div className='h-36'>
             <Image src={product[0].image[0]} alt={product[0].name} width={250} height={187.5} className='rounded-md mb-2 '/>
